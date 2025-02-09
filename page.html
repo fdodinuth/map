@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Map</title>
+    <style>
+        /* Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: white;
+        }
+
+        /* Map Container */
+        .map-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Map Image */
+        .map-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Buttons Positioned on Map */
+        .map-button {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background 0.3s ease;
+            z-index: 10;
+        }
+
+        .map-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: linear-gradient(45deg, #66BB6A, #43A047);
+        }
+
+        /* Details Card */
+        .details-card {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 80%;
+            max-width: 500px;
+            height: 400px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ff6f61, #ff8a80);
+            color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            flex-direction: column;
+            z-index: 20;
+        }
+
+        .details-card.show {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+            display: block;
+        }
+
+        .details-card h2 {
+            margin: 0 0 10px;
+            font-size: 24px;
+            text-align: center;
+        }
+
+        .details-card p {
+            margin: 0;
+            font-size: 16px;
+            line-height: 1.5;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        /* Time Labels */
+        .time-labels {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .start-time,
+        .end-time {
+            display: inline-block;
+            margin: 0 5px;
+            padding: 3px 8px;
+            background: #333;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .start-time {
+            color: #4CAF50;
+        }
+
+        .end-time {
+            color: #FF7043;
+        }
+
+        /* Back Button */
+        .back-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #444;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: #666;
+        }
+
+        /* Floor Button */
+        .floor-button {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background: linear-gradient(45deg, #3f51b5, #303f9f);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background 0.3s ease;
+            z-index: 10;
+        }
+
+        .floor-button:hover {
+            transform: translate(-50%, -50%) scale(1.1);
+            background: linear-gradient(45deg, #5c6bc0, #3f4fb5);
+        }
+    </style>
+</head>
+<body>
+    <div class="map-container">
+        <img src="map.png" alt="Event Map" class="map-image">
+
+        <!-- Map Buttons -->
+        <button class="map-button" data-x="61" data-y="93" onclick="showDetails('entrance')">Entrance</button>
+        <button class="map-button" data-x="60" data-y="8" onclick="showDetails('exit')">Exit</button>
+        <button class="map-button" data-x="20" data-y="56.2" onclick="showDetails('meeting')">Meeting Room</button>
+        <button class="map-button" data-x="78.5" data-y="23" onclick="showDetails('washroom')">Washroom</button>
+        <button class="map-button" data-x="21" data-y="23.3" onclick="showDetails('photobooth')">Photo Booth</button>
+        <button class="map-button" data-x="78" data-y="64.5" onclick="showDetails('lunch')">Lunch</button>
+
+        <!-- Floor Buttons -->
+        <button class="floor-button" data-x="7.2" data-y="8" onclick="window.location.href='1.html'">1st Floor</button>
+        <button class="floor-button" data-x="7.3" data-y="13" onclick="window.location.href='page.html'">Ground Floor</button>
+
+        <!-- Details Cards -->
+        <div class="details-card" id="entrance-card">
+            <div class="time-labels">
+                <div class="start-time">Start: 10:00 AM</div>
+                <div class="end-time">End: 11:00 AM</div>
+            </div>
+            <h2>Entrance</h2>
+            <p>The entrance area is where guests will arrive and be greeted. Enjoy the welcome drinks and proceed to other areas for the event.</p>
+            <button class="back-button" onclick="hideDetails('entrance')">Back</button>
+        </div>
+
+        <div class="details-card" id="exit-card">
+            <div class="time-labels">
+                <div class="start-time">Start: 3:00 PM</div>
+                <div class="end-time">End: 4:00 PM</div>
+            </div>
+            <h2>Exit</h2>
+            <p>The exit area is where guests will leave the event. Please ensure your belongings are packed before heading towards the exit.</p>
+            <button class="back-button" onclick="hideDetails('exit')">Back</button>
+        </div>
+
+        <div class="details-card" id="meeting-card">
+            <div class="time-labels">
+                <div class="start-time">Start: 10:30 AM</div>
+                <div class="end-time">End: 12:00 PM</div>
+            </div>
+            <h2>Meeting Room</h2>
+            <p>The meeting room is designated for corporate discussions and networking sessions. Please use the available materials for effective collaboration.</p>
+            <button class="back-button" onclick="hideDetails('meeting')">Back</button>
+        </div>
+
+        <div class="details-card" id="washroom-card">
+            <h2>Washroom</h2>
+            <p>The washroom area is located near the meeting room. Clean and accessible, it offers all the amenities you need during the event.</p>
+            <button class="back-button" onclick="hideDetails('washroom')">Back</button>
+        </div>
+
+        <div class="details-card" id="photobooth-card">
+            <div class="time-labels">
+                <div class="start-time">Start: 12:00 PM</div>
+                <div class="end-time">End: 2:00 PM</div>
+            </div>
+            <h2>Photo Booth</h2>
+            <p>The photo booth area is designed for fun photos with friends and colleagues. Capture memories with a variety of props available.</p>
+            <button class="back-button" onclick="hideDetails('photobooth')">Back</button>
+        </div>
+
+        <div class="details-card" id="lunch-card">
+            <div class="time-labels">
+                <div class="start-time">Start: 12:30 PM</div>
+                <div class="end-time">End: 2:30 PM</div>
+            </div>
+            <h2>Lunch</h2>
+            <p>The lunch area offers a buffet-style meal with a variety of options. Enjoy delicious dishes while networking with fellow guests.</p>
+            <button class="back-button" onclick="hideDetails('lunch')">Back</button>
+        </div>
+    </div>
+
+    <script>
+        function showDetails(area) {
+            document.getElementById(area + '-card').classList.add('show');
+        }
+
+        function hideDetails(area) {
+            document.getElementById(area + '-card').classList.remove('show');
+        }
+
+        function positionButtons() {
+            const mapImage = document.querySelector('.map-image');
+            const mapContainer = document.querySelector('.map-container');
+            const buttons = document.querySelectorAll('.map-button, .floor-button');
+            
+            function updatePositions() {
+                const imageRect = mapImage.getBoundingClientRect();
+                const containerRect = mapContainer.getBoundingClientRect();
+                
+                const offsetX = (containerRect.width - imageRect.width) / 2;
+                const offsetY = (containerRect.height - imageRect.height) / 2;
+
+                buttons.forEach(button => {
+                    const relX = parseFloat(button.dataset.x);
+                    const relY = parseFloat(button.dataset.y);
+                    
+                    const x = (imageRect.width * relX / 100) + offsetX;
+                    const y = (imageRect.height * relY / 100) + offsetY;
+                    
+                    button.style.left = `${x}px`;
+                    button.style.top = `${y}px`;
+                });
+            }
+
+            mapImage.onload = updatePositions;
+            updatePositions();
+        }
+
+        window.addEventListener('load', positionButtons);
+        window.addEventListener('resize', positionButtons);
+    </script>
+</body>
+</html>
